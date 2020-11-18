@@ -1,0 +1,17 @@
+{
+    "id": 3,
+    "name": "github",
+    "description": "",
+    "type": "docker-registry",
+    "url": "https://ghcr.io",
+    "token_service_url": "",
+    "credential": {
+      "type": "",
+      "access_key": $githubUser,
+      "access_secret": $githubToken
+    },
+    "insecure": false,
+    "status": "healthy",
+    "creation_time": "2020-08-14T17:21:11.034238Z",
+    "update_time": "2020-08-14T17:21:11.034241Z"
+  }

@@ -1,0 +1,27 @@
+{
+  "name": "toolkit",
+  "description": "",
+  "creator": "admin",
+  "src_registry": {
+    "id": 3
+  },
+  "dest_registry": {
+    "id": 0
+  },
+  "dest_namespace": "tools",
+  "filters": [
+      {
+          "type": "name",
+          "value": "tanzu-end-to-end/tanzu-application-toolkit"
+      }
+  ],
+  "trigger": {
+    "type": "scheduled",
+    "trigger_settings": {
+      "cron": "0 */10 * * * *"
+    }
+  },
+  "deletion": false,
+  "override": true,
+  "enabled": true
+}

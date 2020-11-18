@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sonarqube
+  namespace: sonarqube
+data:
+  POSTGRESQL_HOST: sonarqube-db-postgresql
+  SONARQUBE_DATABASE_NAME: sonarqube
+  SONARQUBE_DATABASE_USER: sonarqube
+  SONARQUBE_PROPERTIES: sonar.log.level.app=DEBUG,sonar.log.level.web=DEBUG,sonar.log.level.ce=DEBUG,sonar.log.level.es=DEBUG
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sonarqube-postgresql
+  namespace: sonarqube
+data:
+  SONARQUBE_DATABASE_PASSWORD: #@ base64.encode(data.values.sonarqube.databasePassword)
+  SONARQUBE_PASSWORD: #@ base64.encode(data.values.sonarqube.adminPassword)
+--- 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sonarqube-es-initcontainer
+  namespace: sonarqube
+data:
+  sysctl.sh: |-
+    #!/bin/bash
+
+    set -o errexit
+    set -o pipefail
+    set -o nounset
+
+    if ! [ -x "$(command -v sysctl)" ]; then
+      echo 'sysctl not installed. Installing it...'
+      distro=$(awk -F= '/^ID=/{print $2}' /etc/os-release | tr -d '"')
+      case $distro in
+        ol | centos)
+          yum install -y procps
+          rm -rf /var/cache/yum;;
+        ubuntu | debian)
+          apt-get update -qq && apt-get install -y --no-install-recommends procps
+          rm -rf /var/lib/apt/lists /var/cache/apt/archives;;
+      esac
+    fi
+    sysctl -w vm.max_map_count=262144 && sysctl -w fs.file-max=65536

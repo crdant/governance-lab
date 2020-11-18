@@ -1,0 +1,17 @@
+{
+    "id": 4,
+    "name": "hub",
+    "description": "",
+    "type": "docker-hub",
+    "url": "https://hub.docker.com",
+    "token_service_url": "",
+    "credential": {
+        "type": "basic",
+        "access_key": "",
+        "access_secret": ""
+    },
+    "insecure": false,
+    "status": "healthy",
+    "creation_time": "2020-11-10T23:30:33.204741Z",
+    "update_time": "2020-11-10T23:30:33.204743Z"
+}

@@ -1,0 +1,11 @@
+{
+  "project_name": "build-service",
+  "metadata": {
+    "auto_scan": "true",
+    "enable_content_trust": "false",
+    "prevent_vul": "false",
+    "public": "true",
+    "reuse_sys_cve_whitelist": "true",
+    "severity": "high"
+  }
+}

@@ -1,0 +1,66 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sonarqube
+  name: sonarqube-app
+spec:
+  replicas: 1
+  progressDeadlineSeconds: 600
+  selector:
+    matchLabels:
+      app: sonarqube
+  template:
+    metadata:
+      labels:
+        app: sonarqube
+    spec:
+      initContainers:
+      - name: sysctl
+        command:
+        - /scripts/sysctl.sh
+        image: docker.io/bitnami/minideb:buster
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - mountPath: /scripts/sysctl.sh
+          name: initcontainer-script
+          subPath: sysctl.sh
+      containers:
+      - name: sonarqube
+        image: #@ "{}/tools/sonarqube:8".format(data.values.commonSecrets.harborDomain)
+        resources:
+          requests:
+            memory: "1200Mi"
+            cpu: .25
+          limits:
+            memory: "2500Mi"
+            cpu: .75
+        volumeMounts:
+        - mountPath: "/opt/sonarqube/data/"
+          name: data
+        - mountPath: "/opt/sonarqube/extensions/"
+          name: extensions
+        envFrom:
+        - configMapRef:
+            name: sonarqube
+        - secretRef:
+            name: sonarqube-postgresql
+        ports:
+        - containerPort: 9000
+          protocol: TCP
+      volumes:
+      - name: data 
+        persistentVolumeClaim:
+          claimName: sonarqube-data
+      - name: extensions
+        persistentVolumeClaim:
+          claimName: sonarqube-extensions
+      - name: initcontainer-script
+        configMap:
+          defaultMode: 493
+          name: sonarqube-es-initcontainer
+      

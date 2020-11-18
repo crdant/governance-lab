@@ -1,0 +1,31 @@
+{
+  "name": "concourse",
+  "description": "",
+  "creator": "admin",
+  "src_registry": {
+    "id": 4
+  },
+  "dest_registry": {
+    "id": 0
+  },
+  "dest_namespace": "concourse",
+  "filters": [
+      {
+          "type": "name",
+          "value": "concourse/**-resource"
+      },
+      {
+          "type": "tag",
+          "value": "latest"
+      }
+  ],
+  "trigger": {
+    "type": "scheduled",
+    "trigger_settings": {
+      "cron": "0 07 03 */1,7,14,28 * *"
+    }
+  },
+  "deletion": false,
+  "override": true,
+  "enabled": true
+}

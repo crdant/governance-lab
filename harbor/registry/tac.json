@@ -1,0 +1,17 @@
+{
+    "id": 2,
+    "name": "tac",
+    "description": "",
+    "type": "docker-registry",
+    "url": "https://gcr.io",
+    "token_service_url": "",
+    "credential": {
+      "type": "",
+      "access_key": "_json_key",
+      "access_secret": "{\r\n\"type\": \"service_account\",\r\n\"project_id\": \"sys-2b0109it\",\r\n\"private_key_id\": \"c9dc1e9c39fce8cc3e603ef6a9912c3bd7379f2b\",\r\n\"private_key\": \"-----BEGIN PRIVATE KEY-----\\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7H2jwgzFUP0f5\\nTZyfzqVVQx3gyGYoqD3bC5SJLWmqeLX2NGh6lS2W9cJOayPYWa29NacGVv9rFXP4\\nYT6EAtR5q7qW1GW4LrkWPZSDmuWEy+kwA22fc8y8wZXW19+QG+B7HdB55ewJnnVN\\nJhPZ\/3df8aAVlE2WMLow3xSHZLXpbU4qir9P3p2oqEwYjeEg70QLUTVwQmc7\/qkg\\nteqQptWyg3zaU77oYKs5XMPrIvIB6RlbAnBw5T3RZzcn0XJ1whMRiC8\/XZG9m2AT\\n+u45CBeJgh2+adZVCnoYMSHVAHh3RVpbXGP5Qz8jkYIaKRg1sm1jpIPtMhOMhEVC\\nUJ7569HlAgMBAAECggEALCpQdi38213ZQsQZAtX\/C2X9PBQImrGE8fmkfBEqJrh5\\neCwr+bzShxYn36Llkbeu7GDotHQdsnxchCQNoZJabIJGFrn4bTWn7VIpBrvtTr\/j\\nILg6bD9kdCu7zjri8yxFOkHR9id4o9eQ553kYxhrKEvLJTS88EU9ePH6Mi+oyPhh\\n74LepNk8GJQb09SmBjMFLoSH16U61qk9IWUlcXDICk6N+RVfQQC7o0qNI5wlK+jo\\nXoiB2427EKh3ZVxyAU3S4TEIxaWDVmkctAC3VE\/OVoE4xcrSdOfeb62AbgbwbDIq\\nINpROlV7NpHSkjCb2INemiEiqCijQF8VGEsuxb5JGQKBgQDzBfjSdSLlXgVqRDCa\\niu\/4UPJEOnYijGChYARUp+II+XYT2wLRDq+bSRjFA8G\/GoYdUtsq23wkWcRm2nEw\\nzCJthcMlaArMI1DVUmCB9P+vHpl4KibHLyV2zjcVPmvYvOrrsbrezftqbxBdu2DP\\nstCla8ubKhVY8\/XptTDeq99rKQKBgQDFHUysVaxM4XyEP5enewhJ4L8zE4vjkn36\\n\/6qGiXdALsRcqUARO3T\/96TPdvJM+02lmrwkIYFNS6uZ0XoRh+47P7+gjyokTq\/1\\nboTubEneeestsdO2+Eb93Bs0k6UlVYduOldWZWvovxAS9qrS17jdCD+jiFvfdPKC\\nvEqJO1NEXQKBgESCO3nA0byNO8OQQ49deXasAw\/e1yy4HAmCEtZ2mU7kXDgOtoWO\\nuUxyV8w6WeTwqjwb\/nLfeuiYcbh4\/g2+jjoHylKCOQEBN6lbVp9sHKQWYTcx0sq1\\n7L7INVkExsxLvYICEWb79FM1ygxSZWFHzG\/FqpksTOZNp9ZhYMx08T+5AoGAHJ12\\nRgZh7v9E\/kXlFDEuMNtpplaOFklr9IYtET7five\/FdyUKmxBPe+Lg3q3DinlScc+\\nzNf4V2pGzRu15tme4gcNIJfn\/EFYFf8nWR1rU9rLI2UPYR6F39CWOnm8ncDe2kep\\n6ibrFWy3PqmEfvtGIQBTjL\/85mGp2wTOpUFxgxkCgYEAjC+0uhwvjq1CtX07ZzWD\\nAvBhgENbeMhgJH39LPwQeN6elMAZuVXOOMjdcUgBhmn+qFdtT8grTTb8aVaMv03w\\npb3Ad\/h9O02jju1szFauk3bRyOeLgnfbGWfxQr+wLF6QX88OOni2k7AZSsY7c2+B\\nJ98NXFP\/ONWBctynfAIhzRE=\\n-----END PRIVATE KEY-----\\n\",\r\n\"client_email\": \"ro-tac-demo@sys-2b0109it.iam.gserviceaccount.com\",\r\n\"client_id\": \"104362580895171078721\",\r\n\"auth_uri\": \"https:\/\/accounts.google.com\/o\/oauth2\/auth\",\r\n\"token_uri\": \"https:\/\/oauth2.googleapis.com\/token\",\r\n\"auth_provider_x509_cert_url\": \"https:\/\/www.googleapis.com\/oauth2\/v1\/certs\",\r\n\"client_x509_cert_url\": \"https:\/\/www.googleapis.com\/robot\/v1\/metadata\/x509\/ro-tac-demo%40sys-2b0109it.iam.gserviceaccount.com\"\r\n}"
+    },
+    "insecure": false,
+    "status": "healthy",
+    "creation_time": "2020-08-14T17:21:11.034238Z",
+    "update_time": "2020-08-14T17:21:11.034241Z"
+  }

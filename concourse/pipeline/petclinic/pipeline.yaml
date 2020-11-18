@@ -1,0 +1,473 @@
+resources:
+- name: source-code
+  type: git
+  source:
+    uri: ((petclinic.codeRepo))
+    branch: main
+- name: config-repo
+  type: git
+  source:
+    uri: ((petclinic.configRepo))
+    branch: main
+    paths:
+     - "k8s/**"
+- name: spring-petclinic-image
+  type: registry-image
+  source:
+    repository: ((petclinic.image))
+    tag: latest
+- name: version
+  type: semver
+  source:
+    driver: git
+    uri: ((petclinic.codeRepo))
+    branch: version
+    file: version
+    username: ((common-secrets.githubUser))
+    password: ((common-secrets.githubToken))
+- name: artifact
+  type: maven-resource
+  source:
+    url: ((petclinic.packageRepo))
+    snapshot_url: ((petclinic.packageRepo))
+    artifact: ((petclinic.packageGroup)):spring-petclinic:jar
+    username: ((common-secrets.githubUser))
+    password: ((common-secrets.githubToken))
+- name: results
+  type: s3
+  source:
+    bucket: ((sonarqube.resultsBucket))
+    region_name: ((common-secrets.awsRegion))
+    access_key_id: ((common-secrets.awsAccessKeyId))
+    secret_access_key: ((common-secrets.awsSecretAccessKey))
+    versioned_file: zap/petclinic.md
+
+jobs:
+- name: build
+  plan:
+  - get: source-code
+    trigger: true
+  - get: version
+    params:
+      pre: SNAPSHOT
+  - task: compile-and-test
+    output_mapping:
+      target: target
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: adoptopenjdk
+          tag: 11-jdk-hotspot
+      inputs:
+        - name: source-code
+      outputs:
+        - name: target
+      caches:
+        - path: source-code/maven
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            cd source-code
+            if [[ -d $PWD/maven && ! -d $HOME/.m2 ]]; then
+              ln -s "$PWD/maven" "$HOME/.m2"
+            fi
+            # Added -DskipTests and -Dcheckstyle.skip to speed up task for demo purpose
+            # They should not be included in a proper test pipeline
+            ./mvnw package -DskipTests -Dcheckstyle.skip -Dbuild.version=$(cat version/number)
+            cp target/*.jar ../target
+  - put: artifact
+    params:
+      file: target/*.jar
+      pom_file: source-code/pom.xml
+      version_file: version/version
+
+- name: static-code-scan
+  plan:
+  - get: source-code
+    trigger: true
+    passed: 
+    - build
+  - get: artifact
+    passed: 
+    - build
+  - task: sonarqube-scan
+    params:
+      # CA_CERT: ((ca_cert))
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: openjdk
+          tag: 8-jdk
+      inputs:
+        - name: source-code
+        - name: artifact
+      run:
+        path: bash
+        args:
+        - '-c'
+        - | 
+          cd source-code 
+          ./mvnw sonar:sonar -Dsonar.projectKey=petclinic \
+            -Dsonar.host.url=((sonarqube.host)) \
+            -Dsonar.login=((sonarqube.token)) \
+            -Dsonar.java.binaries=../artifact
+
+- name: policy-validation
+  plan:
+  - get: artifact
+    trigger: true
+    passed: 
+    - static-code-scan
+  - get: config-repo
+    trigger: true
+  - task: validate-k8s-objects
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: ((common-secrets.harborDomain))/tools/tanzu-application-toolkit
+      inputs:
+      - name: config-repo
+      run:
+        path: /bin/bash
+        args:
+        - -c
+        - |
+          conftest test --update oci://((common-secrets.harborDomain))/policy/workload-validation config-repo
+   
+- name: publish-image 
+  plan: 
+    - get: artifact
+      passed: 
+      - static-code-scan
+      trigger: true
+    - task: update-build-service-image
+      params:
+        KUBECONFIG_JSON: ((common-secrets.kubeconfigBuildServer))
+      input_mapping:
+        target: target
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((common-secrets.concourseHelperImage))
+        inputs:
+          - name: artifact
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - |
+              docker login ((common-secrets.harborDomain)) -u '((common-secrets.harborUser))' -p '((common-secrets.harborPassword))'
+              umask 077
+              echo $KUBECONFIG_JSON>kubeconfig.json
+              export KUBECONFIG=kubeconfig.json
+              set +e
+              kp image list -n ((petclinic.tbsNamespace)) | grep "spring-petclinic" 
+              exists=$?
+              set -e
+              if [ $exists -eq 0 ]; then
+                kp image patch spring-petclinic \
+                  --namespace ((petclinic.tbsNamespace)) \
+                  --wait \
+                  --local-path artifact/spring-petclinic-*.jar
+              else
+                kp image create spring-petclinic \
+                  --tag ((petclinic.image)) \
+                  --cluster-builder demo-cluster-builder \
+                  --namespace ((petclinic.tbsNamespace)) \
+                  --wait \
+                  --local-path artifact/spring-petclinic-*.jar
+              fi
+
+- name: application-scan
+  public: true
+  serial: true
+  plan:
+    - get: spring-petclinic-image
+      trigger: true
+    - get: config-repo
+      passed: 
+      - policy-validation
+      trigger: true
+    - get: artifact
+      passed: 
+      - publish-image
+      trigger: true
+
+    - task: deploy-db
+      params:
+        KUBECONFIG_JSON: ((common-secrets.kubeconfigAppServer))
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((common-secrets.concourseHelperImage))
+            tag: latest
+        inputs:
+          - name: config-repo
+          - name: spring-petclinic-image
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - |
+              export DIGEST=$(cat spring-petclinic-image/digest)
+
+              # TODO Need to setup the kubeconfig
+              umask 077
+              echo $KUBECONFIG_JSON>kubeconfig.json
+              export KUBECONFIG=kubeconfig.json
+
+              cat > values.yaml <<VALUES
+              db:
+                name: petclinic
+                password: petclinic
+                user: petclinic
+              replication:
+                enabled: false
+              root:
+                password: petclinic
+              VALUES
+              
+              helm repo add bitnami https://charts.bitnami.com/bitnami          
+              helm upgrade --install petclinic-db bitnami/mysql -n petclinic-staging -f values.yaml --wait
+
+    - task: deploy-app
+      params:
+        KUBECONFIG_JSON: ((common-secrets.kubeconfigAppServer))
+      config:
+        platform: linux
+        image_resource: 
+          type: docker-image
+          source :
+            repository: ((common-secrets.concourseHelperImage))
+            tag: latest
+        inputs:
+          - name: config-repo
+          - name: spring-petclinic-image
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - |
+              export DIGEST=$(cat spring-petclinic-image/digest)
+
+              # TODO Need to setup the kubeconfig
+              umask 077
+              echo $KUBECONFIG_JSON>kubeconfig.json
+              export KUBECONFIG=kubeconfig.json
+
+              cat > config-repo/k8s/values.yml <<VALUES
+              #@data/values
+              ---
+              petclinic:
+                host: ((petclinic.stagingHost))-${DIGEST:7:17}.((petclinic.stagingDomain))
+                image: ((petclinic.image))@$DIGEST
+                wavefront:
+                  applicationName: ((petclinic.wavefrontApplicationName))-staging
+                  uri: ((petclinic.wavefrontUri))
+                  apiToken: ((petclinic.wavefrontApiToken))
+              VALUES
+              cat config-repo/k8s/values.yml
+              
+              cat > config-repo/k8s/issuer.yaml <<OVERLAY
+              #@ load("@ytt:overlay", "overlay")
+              #@overlay/match by=overlay.subset({"kind":"Ingress"}),expects="1+"
+              ---
+              metadata:
+                annotations: 
+                  cert-manager.io/cluster-issuer: letsencrypt-staging-contour-cluster-issuer
+              OVERLAY
+              ytt -f config-repo/k8s --ignore-unknown-comments | kapp deploy -n petclinic-staging --into-ns petclinic-staging -a petclinic -y -f -
+
+    - task: prepare-results-path
+      config:
+        platform: linux
+        image_resource: 
+          type: docker-image
+          source :
+            repository: ((common-secrets.concourseHelperImage))
+            tag: latest
+        outputs:
+          - name: results
+        run:
+          path: /bin/bash
+          args:
+            - '-c' 
+            - |
+              output_dir=$(pwd)/results/zap
+              mkdir ${output_dir} && chgrp 1000 ${output_dir} && chmod g+w ${output_dir}
+
+    - task: quick-scan
+      params:
+        # CA_CERT: ((ca_cert))
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: ((common-secrets.harborDomain))/tools/zap2docker-weekly
+            tag: latest
+        inputs:
+        - name: spring-petclinic-image
+        - name: results
+        outputs:
+        - name: results
+        run:
+          path: bash
+          args:
+          - '-c'
+          - | 
+            export DIGEST=$(cat spring-petclinic-image/digest)
+            export TARGET=https://((petclinic.stagingHost))-${DIGEST:7:17}.((petclinic.stagingDomain))
+
+            zap-cli start --start-options '-config api.disablekey=true' 
+            zap-cli -v quick-scan --spider --ajax-spider --scanners all "${TARGET}" 
+            zap-cli report -f md -o results/zap/petclinic.md
+            zap-cli shutdown
+
+    - put: results      
+      params:
+        file: results/zap/petclinic.md
+
+
+    - task: cleanup
+      params:
+        KUBECONFIG_JSON: ((common-secrets.kubeconfigAppServer))
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((common-secrets.concourseHelperImage))
+            tag: latest
+        inputs:
+          - name: config-repo
+          - name: spring-petclinic-image
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - |
+              export DIGEST=$(cat spring-petclinic-image/digest)
+
+              # TODO Need to setup the kubeconfig
+              umask 077
+              echo $KUBECONFIG_JSON>kubeconfig.json
+              export KUBECONFIG=kubeconfig.json
+              
+              kapp delete -n petclinic-staging -a petclinic --filter '{ "not": { "resource" : { "kinds": [ "AntreaControllerInfo" ] } } }' -y
+              helm delete -n petclinic-staging petclinic-db 
+
+ 
+- name: production-deployment
+  public: true
+  serial: true
+  plan:
+    - get: spring-petclinic-image
+      trigger: true
+      passed:
+      - application-scan
+    - get: config-repo
+      passed: 
+      - application-scan
+      trigger: true
+    - task: create-wavefront-event
+      params:
+        WAVEFRONT_API_TOKEN: ((petclinic.wavefrontApiToken))
+        WAVEFRONT_URL: ((petclinic.wavefrontUri))
+        WAVEFRONT_DEPLOY_EVENT_NAME: ((petclinic.wavefrontDeployEventName))
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((common-secrets.concourseHelperImage))
+            tag: latest
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - |
+              set -euo pipefail
+
+              START_TIME=$(date +%s000)
+              sleep 1
+              END_TIME=$(date +%s000)
+
+              curl \
+                -X POST \
+                --header "Content-Type: application/json" \
+                --header "Accept: application/json" \
+                --header "Authorization: Bearer ${WAVEFRONT_API_TOKEN}" \
+                -d "{
+                  \"name\": \"${WAVEFRONT_DEPLOY_EVENT_NAME}\",
+                  \"annotations\": {
+                    \"severity\": \"info\",
+                    \"type\": \"image deploy\",
+                    \"details\": \"new spring-petclinic image deployed\"
+                  },
+                  \"startTime\": "${START_TIME}",
+                  \"endTime\": "${END_TIME}"
+                }" "${WAVEFRONT_URL}/api/v2/event"
+
+    - task: deploy-app
+      params:
+        KUBECONFIG_JSON: ((common-secrets.kubeconfigAppServer))
+      config:
+        platform: linux
+        image_resource:
+          type: docker-image
+          source:
+            repository: ((common-secrets.concourseHelperImage))
+            tag: latest
+        inputs:
+          - name: config-repo
+          - name: spring-petclinic-image
+        run:
+          path: /bin/bash
+          args:
+            - -c
+            - |
+              export DIGEST=$(cat spring-petclinic-image/digest)
+
+              # TODO Need to setup the kubeconfig
+              umask 077
+              echo $KUBECONFIG_JSON>kubeconfig.json
+              export KUBECONFIG=kubeconfig.json
+
+              cat > config-repo/k8s/values.yml <<VALUES
+              #@data/values
+              ---
+              petclinic:
+                host: ((petclinic.host))
+                image: ((petclinic.image))@$DIGEST
+                wavefront:
+                  applicationName: ((petclinic.wavefrontApplicationName))
+                  uri: ((petclinic.wavefrontUri))
+                  apiToken: ((petclinic.wavefrontApiToken))
+              VALUES
+              cat config-repo/k8s/values.yml
+              
+              ytt -f config-repo/k8s --ignore-unknown-comments | kapp deploy -n petclinic -a petclinic -y -f -
+
+    - put: version
+      params:
+        pre: SNAPSHOT
+
+resource_types:
+- name: maven-resource
+  type: docker-image
+  source:
+    repository: ((common-secrets.harborDomain))/concourse/maven-resource
+    tag: latest

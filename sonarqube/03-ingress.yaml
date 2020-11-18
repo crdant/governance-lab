@@ -1,0 +1,22 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sonarqube
+  namespace: sonarqube
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-contour-cluster-issuer
+    kubernetes.io/ingress.class: contour
+spec:
+  rules:
+  - host: #@ data.values.sonarqube.host 
+    http:
+      paths:
+      - backend:
+          serviceName: sonarqube
+          servicePort: 9000
+  tls:
+  - hosts:
+    - #@ data.values.sonarqube.host 
+    secretName: sonarqube-cert
