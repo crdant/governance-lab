@@ -1,0 +1,16 @@
+#@ load("ytt:data", "data")
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-staging-contour-cluster-issuer
+spec:
+  acme:
+    email: #@ data.values.email
+    privateKeySecretRef:
+      name: acme-account-key
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    solvers:
+    - http01:
+        ingress:
+          class: contour

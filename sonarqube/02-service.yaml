@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: sonarqube
+  namespace: sonarqube
+  labels:
+    app: sonarqube
+spec:
+  type: ClusterIP
+  ports:
+    - name: sonarqube
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: sonarqube

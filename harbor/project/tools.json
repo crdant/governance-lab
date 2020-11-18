@@ -1,0 +1,11 @@
+{
+  "project_name": "tools",
+  "metadata": {
+    "auto_scan": "true",
+    "enable_content_trust": "false",
+    "prevent_vul": "true",
+    "public": "true",
+    "reuse_sys_cve_whitelist": "true",
+    "severity": "high"
+  }
+}
