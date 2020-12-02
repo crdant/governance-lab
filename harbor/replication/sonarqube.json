@@ -1,0 +1,31 @@
+{
+  "name": "sonarqube",
+  "description": "",
+  "creator": "admin",
+  "src_registry": {
+    "id": 4
+  },
+  "dest_registry": {
+    "id": 0
+  },
+  "dest_namespace": "tools",
+  "filters": [
+      {
+          "type": "name",
+          "value": "bitnami/sonarqube"
+      },
+      {
+          "type": "tag",
+          "value": "8"
+      }
+  ],
+  "trigger": {
+    "type": "scheduled",
+    "trigger_settings": {
+      "cron": "0 20 10 */1,7,14,28 * *"
+    }
+  },
+  "deletion": false,
+  "override": true,
+  "enabled": true
+}
