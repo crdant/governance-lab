@@ -1,18 +1,18 @@
 {
-  "name": "catalog",
+  "name": "maven-resource",
   "description": "",
   "creator": "admin",
   "src_registry": {
-    "id": 2
+    "id": 4
   },
   "dest_registry": {
     "id": 0
   },
-  "dest_namespace": "catalog",
+  "dest_namespace": "concourse",
   "filters": [
       {
           "type": "name",
-          "value": "sys-2b0109it/demo/bitnami/**"
+          "value": "nulldriver/maven-resource"
       },
       {
           "type": "tag",
