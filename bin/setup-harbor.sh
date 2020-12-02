@@ -6,6 +6,7 @@ curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/proj
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/projects -H "Content-type: application/json" --data @harbor/project/petclinic.json
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/projects -H "Content-type: application/json" --data @harbor/project/concourse.json
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/projects -H "Content-type: application/json" --data @harbor/project/tools.json
+curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/projects -H "Content-type: application/json" --data @harbor/project/policy.json
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/registries -H "Content-type: application/json" --data @harbor/registry/gcr.json
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/registries -H "Content-type: application/json" --data @harbor/registry/tac.json
 GITHUB_REGISTRY=$(jq -n --arg githubUser $(yq r $PARAMS_YAML commonSecrets.githubUser) --arg githubToken $(yq r $PARAMS_YAML commonSecrets.githubToken) "$(cat ./harbor/registry/github.json)")
