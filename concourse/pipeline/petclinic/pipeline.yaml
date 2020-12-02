@@ -114,7 +114,7 @@ jobs:
         - | 
           cd source-code 
           ./mvnw sonar:sonar -Dsonar.projectKey=petclinic \
-            -Dsonar.host.url=((sonarqube.host)) \
+            -Dsonar.host.url=https://((sonarqube.host)) \
             -Dsonar.login=((sonarqube.token)) \
             -Dsonar.java.binaries=../artifact
 
