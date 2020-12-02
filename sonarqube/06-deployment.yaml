@@ -48,7 +48,7 @@ spec:
         - configMapRef:
             name: sonarqube
         - secretRef:
-            name: sonarqube-postgresql
+            name: sonarqube-database
         ports:
         - containerPort: 9000
           protocol: TCP
