@@ -1,5 +1,5 @@
 {
-  "name": "maven-resource",
+  "name": "zap",
   "description": "",
   "creator": "admin",
   "src_registry": {
@@ -8,11 +8,11 @@
   "dest_registry": {
     "id": 0
   },
-  "dest_namespace": "concourse",
+  "dest_namespace": "tools",
   "filters": [
       {
           "type": "name",
-          "value": "nulldriver/maven-resource"
+          "value": "owasp/zap2docker-weekly"
       },
       {
           "type": "tag",

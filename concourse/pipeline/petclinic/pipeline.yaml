@@ -114,7 +114,7 @@ jobs:
         - | 
           cd source-code 
           ./mvnw sonar:sonar -Dsonar.projectKey=petclinic \
-            -Dsonar.host.url=((sonarqube.host)) \
+            -Dsonar.host.url=https://((sonarqube.host)) \
             -Dsonar.login=((sonarqube.token)) \
             -Dsonar.java.binaries=../artifact
 
@@ -229,18 +229,21 @@ jobs:
               export KUBECONFIG=kubeconfig.json
 
               cat > values.yaml <<VALUES
-              db:
-                name: petclinic
+              auth:
+                rootPassword: petclinic
+                database: petclinic
+                username: petclinic
                 password: petclinic
-                user: petclinic
-              replication:
-                enabled: false
-              root:
-                password: petclinic
+              image:
+                registry: ((common-secrets.harborDomain))
+                repository: catalog/mysql
+                tag: latest
+              secondary:
+                replicaCount: 0
               VALUES
               
-              helm repo add bitnami https://charts.bitnami.com/bitnami          
-              helm upgrade --install petclinic-db bitnami/mysql -n petclinic-staging -f values.yaml --wait
+              helm repo add tac https://charts.trials.tac.bitnami.com/demo
+              helm upgrade --install petclinic-db tac/mysql -n petclinic-staging -f values.yaml --wait
 
     - task: deploy-app
       params:
@@ -271,14 +274,13 @@ jobs:
               #@data/values
               ---
               petclinic:
-                host: ((petclinic.stagingHost))-${DIGEST:7:17}.((petclinic.stagingDomain))
+                host: ((petclinic.stagingPrefix))-${DIGEST:7:17}.((petclinic.stagingDomain))
                 image: ((petclinic.image))@$DIGEST
                 wavefront:
                   applicationName: ((petclinic.wavefrontApplicationName))-staging
                   uri: ((petclinic.wavefrontUri))
                   apiToken: ((petclinic.wavefrontApiToken))
               VALUES
-              cat config-repo/k8s/values.yml
               
               cat > config-repo/k8s/issuer.yaml <<OVERLAY
               #@ load("@ytt:overlay", "overlay")
@@ -329,7 +331,7 @@ jobs:
           - '-c'
           - | 
             export DIGEST=$(cat spring-petclinic-image/digest)
-            export TARGET=https://((petclinic.stagingHost))-${DIGEST:7:17}.((petclinic.stagingDomain))
+            export TARGET=https://((petclinic.stagingPrefix))-${DIGEST:7:17}.((petclinic.stagingDomain))
 
             zap-cli start --start-options '-config api.disablekey=true' 
             zap-cli -v quick-scan --spider --ajax-spider --scanners all "${TARGET}" 
