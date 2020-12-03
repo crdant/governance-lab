@@ -16,3 +16,4 @@ curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/repl
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/replication/policies -H "Content-type: application/json" --data @harbor/replication/catalog.json
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/replication/policies -H "Content-type: application/json" --data @harbor/replication/concourse.json
 curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/replication/policies -H "Content-type: application/json" --data @harbor/replication/maven-resource.json
+curl --user "admin:${HARBOR_PASSWORD}" -X POST https://${REGISTRY}/api/v2.0/replication/policies -H "Content-type: application/json" --data @harbor/replication/zap.json
