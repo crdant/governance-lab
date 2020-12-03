@@ -229,18 +229,21 @@ jobs:
               export KUBECONFIG=kubeconfig.json
 
               cat > values.yaml <<VALUES
-              db:
-                name: petclinic
+              auth:
+                rootPassword: petclinic
+                database: petclinic
+                username: petclinic
                 password: petclinic
-                user: petclinic
-              replication:
-                enabled: false
-              root:
-                password: petclinic
+              image:
+                registry: ((common-secrets.harborDomain))
+                repository: catalog/mysql
+                tag: latest
+              secondary:
+                replicaCount: 0
               VALUES
               
-              helm repo add bitnami https://charts.bitnami.com/bitnami          
-              helm upgrade --install petclinic-db bitnami/mysql -n petclinic-staging -f values.yaml --wait
+              helm repo add tac https://charts.trials.tac.bitnami.com/demo
+              helm upgrade --install petclinic-db tac/mysql -n petclinic-staging -f values.yaml --wait
 
     - task: deploy-app
       params:
