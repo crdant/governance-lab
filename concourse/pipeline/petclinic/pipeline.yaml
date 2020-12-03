@@ -274,14 +274,13 @@ jobs:
               #@data/values
               ---
               petclinic:
-                host: ((petclinic.stagingHost))-${DIGEST:7:17}.((petclinic.stagingDomain))
+                host: ((petclinic.stagingPrefix))-${DIGEST:7:17}.((petclinic.stagingDomain))
                 image: ((petclinic.image))@$DIGEST
                 wavefront:
                   applicationName: ((petclinic.wavefrontApplicationName))-staging
                   uri: ((petclinic.wavefrontUri))
                   apiToken: ((petclinic.wavefrontApiToken))
               VALUES
-              cat config-repo/k8s/values.yml
               
               cat > config-repo/k8s/issuer.yaml <<OVERLAY
               #@ load("@ytt:overlay", "overlay")
@@ -332,7 +331,7 @@ jobs:
           - '-c'
           - | 
             export DIGEST=$(cat spring-petclinic-image/digest)
-            export TARGET=https://((petclinic.stagingHost))-${DIGEST:7:17}.((petclinic.stagingDomain))
+            export TARGET=https://((petclinic.stagingPrefix))-${DIGEST:7:17}.((petclinic.stagingDomain))
 
             zap-cli start --start-options '-config api.disablekey=true' 
             zap-cli -v quick-scan --spider --ajax-spider --scanners all "${TARGET}" 
