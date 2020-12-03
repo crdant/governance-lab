@@ -2,7 +2,8 @@
 set -e
 
 REGISTRY=$(yq r $PARAMS_YAML commonSecrets.harborDomain)
-pushd conftest/policy 2>&1 > /dev/null
-opa build -o ${WORK_DIR}/policy.tar.gz .
-popd 2>&1 > /dev/null
-oras push --insecure ${REGISTRY}/policy/workload-validation work/policy.tar.gz
+USER=$(yq r $PARAMS_YAML commonSecrets.harborUser)
+PASSWORD=$(yq r $PARAMS_YAML commonSecrets.harborPassword)
+
+docker run -v $(pwd)/conftest:/conftest -w /conftest --rm -it ${REGISTRY}/tools/tanzu-application-toolkit:latest \
+    bash -c "docker login -u ${USER} -p ${PASSWORD} ${REGISTRY} && conftest push ${REGISTRY}/policy/workload-validation:latest"
