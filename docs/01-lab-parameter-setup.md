@@ -17,3 +17,8 @@ the only ones to be aware of are the two that start with `kubeconfig` which
 reference a Kubernetes configuration for your build (shared services) and
 workload clusters. See [Dodd's docs](https://github.com/doddatpivotal/tkg-lab-e2e-adaptation/blob/main/docs/01-environment-config.md) 
 for a quick set of instructions on getting those set up. 
+
+## Next Step
+
+[Install TBS and it's dependencies](docs/02-install-tbs.md).
+
