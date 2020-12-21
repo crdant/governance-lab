@@ -66,7 +66,7 @@ function add_namespace() {
 
 OKTA_GROUP="${TEAM}-devs"
 if ! check_okta_group "${OKTA_GROUP}" ; then
-    add_okta_group "${OKTA_GROUP}" "Steeltoe music store development team"
+    add_okta_group "${OKTA_GROUP}" "${TEAM} development team"
 fi
 
 CONCOURSE_MAIN_TARGET=$(yq r ${PARAMS_YAML} common.concourseMainTarget)
@@ -75,21 +75,21 @@ if [[ -z $(fly -t ${CONCOURSE_MAIN_TARGET} teams --json | jq -r --arg team ${TEA
 fi
 
 if ! check_workspace ${WORKLOAD_WORKSPACE} ; then
-    add_workspace ${WORKLOAD_WORKSPACE} "Steeltoe music store"
+    add_workspace ${WORKLOAD_WORKSPACE} "${TEAM} environment(s)"
 fi
 
 if ! check_namespace ${WORKLOAD_CLUSTER} ${WORKLOAD_WORKSPACE} ${TEAM} ; then
-    add_namespace ${WORKLOAD_CLUSTER} ${WORKLOAD_WORKSPACE} ${TEAM} "Steeltoe music store production"
+    add_namespace ${WORKLOAD_CLUSTER} ${WORKLOAD_WORKSPACE} ${TEAM} "${TEAM} production"
 fi
 
 STAGING_NAMESPACE=${TEAM}-staging
 if ! check_namespace ${WORKLOAD_CLUSTER} ${WORKLOAD_WORKSPACE} ${STAGING_NAMESPACE} ; then
-    add_namespace ${WORKLOAD_CLUSTER} ${WORKLOAD_WORKSPACE} ${STAGING_NAMESPACE} "Steeltoe music store staging"
+    add_namespace ${WORKLOAD_CLUSTER} ${WORKLOAD_WORKSPACE} ${STAGING_NAMESPACE} "${TEAM} staging"
 fi
 
 SECRETS_NAMESPACE=concourse-${TEAM}
 if ! check_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${SECRETS_NAMESPACE} ; then
-    add_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${SECRETS_NAMESPACE} "Steeltoe music store concourse secret store"
+    add_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${SECRETS_NAMESPACE} "${TEAM} concourse secret store"
 fi
 
 TBS_NAMESPACE=tbs-project-${TEAM}
@@ -97,7 +97,7 @@ HARBOR_DOMAIN=$(yq r $PARAMS_YAML commonSecrets.harborDomain)
 REGISTRY_USER=$(yq r $PARAMS_YAML commonSecrets.harborUser)
 REGISTRY_PASSWORD=$(yq r $PARAMS_YAML commonSecrets.harborPassword)
 if ! check_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAMESPACE} ; then
-    add_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAMESPACE} "Steeltoe music store TBS build namespace"
+    add_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAMESPACE} "${TEAM} TBS build namespace"
     kp secret create harbor-creds \
       --registry $HARBOR_DOMAIN \
       --registry-user $REGISTRY_USER \
