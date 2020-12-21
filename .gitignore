@@ -1,4 +1,5 @@
 secrets/*
+!secrets/REDACTED-*
 !secrets/*.enc
 !secrets/README.md
 work/*
