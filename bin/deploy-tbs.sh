@@ -32,5 +32,15 @@ ytt ${download_dir}/values.yaml \
 kp import -f ${download_dir}/descriptor-${dependency_minusone}.yaml
 kp import -f ${download_dir}/descriptor-${dependency_version}.yaml
 
+kp clusterstack create demo-stack  \
+  --build-image ${repository}/build@sha256:ee37e655a4f39e2e6ffa123306db0221386032d3e6e51aac809823125b0a400e \
+  --run-image ${repository}/run@sha256:51cebe0dd77a1b09934c4ce407fb07e3fc6f863da99cdd227123d7bfc7411efa
+
+kp clusterbuilder create demo-cluster-builder \
+  --tag ${repository}/demo-cluster-builder \
+  --order tbs/demo-cluster-builder-order.yaml \
+  --stack demo-stack \
+  --store default
+
 kubectl config use-context ${previous_context}
 
