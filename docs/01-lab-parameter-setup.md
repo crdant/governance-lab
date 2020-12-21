@@ -20,5 +20,5 @@ for a quick set of instructions on getting those set up.
 
 ## Next Step
 
-[Install TBS and it's dependencies](docs/02-install-tbs.md).
+[Prepare registry objects](docs/02-prepare-registry.md).
 

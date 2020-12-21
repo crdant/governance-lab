@@ -21,10 +21,12 @@ their repositories before we get started.
 1. [Configure parameters for this lab](docs/01-lab-parameter-setup.md) another step
    where I lean heavily on [@doddatpivotal](https://github.com/doddatpivotal) since 
    my parameter file is adapted from his.
-2. [Install TBS and it's dependencies](docs/02-install-tbs.md) onto the shared 
+2. [Prepare your Harbor registry](docs/02-prepare-registry.md) with the required 
+   Okta users, projects, and replications.
+2. [Install TBS and it's dependencies](docs/03-install-tbs.md) onto the shared 
    services cluster. This step also creates a stack and builder using older 
    dependencies so we can demonstrate how new TBS dependencies can resolve CVEs without 
    developers rebuilding.
-3. [Setup the environment for the Petclinic development team](docs/03-setup-team.sh). 
+3. [Setup the environment for the Petclinic development team](docs/04-setup-team.sh). 
    Creates dependencies for the development team in Okta, Concourse, TMC, and both 
    the workload and shared services clusters.
