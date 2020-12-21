@@ -4,11 +4,11 @@ TEAM=${1} # (yq r ${PARAMS_YAML} common.team)
 OKTA_API_KEY=$(yq r ${PARAMS_YAML} okta.api-key)
 OKTA_AUTH_SERVER_CN=$(yq r ${PARAMS_YAML} okta.auth-server-fqdn)
 
-SHARED_SERVICES_CLUSTER=$(yq r ${PARAMS_YAML} musicstore.tmc.shared-services-cluster)
-PLATFORM_WORKSPACE=$(yq r ${PARAMS_YAML} musicstore.tmc.platform-workspace)
+SHARED_SERVICES_CLUSTER=$(yq r ${PARAMS_YAML} tmc.shared-services-cluster)
+PLATFORM_WORKSPACE=$(yq r ${PARAMS_YAML} tmc.platform-workspace)
 
-WORKLOAD_CLUSTER=$(yq r ${PARAMS_YAML} musicstore.tmc.workload-cluster)
-WORKLOAD_WORKSPACE=$(yq r ${PARAMS_YAML} musicstore.tmc.workload-workspace)
+WORKLOAD_CLUSTER=$(yq r ${PARAMS_YAML} tmc.workload-cluster)
+WORKLOAD_WORKSPACE=$(yq r ${PARAMS_YAML} tmc.workload-workspace)
 
 function check_okta_group() {
     local name="${1}"
