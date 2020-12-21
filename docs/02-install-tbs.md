@@ -30,3 +30,6 @@ later mimic how we can resolve issues by upgrading TBS.
 kp clusterbuilder list
 ```
 
+## Next Step
+
+[Setup the environment for the Petclinic development team](docs/03-setup-team.sh) 
