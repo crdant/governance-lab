@@ -25,3 +25,7 @@ admin and the password you specified in your paramter file.
 open https://$(yq r ${PARAMS_YAML} sonarqube.host)
 ```
 
+## Next Step
+
+[Push the policy bundle to the registry](docs/06-push-policy-bundle.md) 
+

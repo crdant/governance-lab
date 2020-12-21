@@ -27,6 +27,12 @@ their repositories before we get started.
    services cluster. This step also creates a stack and builder using older 
    dependencies so we can demonstrate how new TBS dependencies can resolve CVEs without 
    developers rebuilding.
-3. [Setup the environment for the Petclinic development team](docs/04-setup-team.sh). 
+3. [Setup the environment for the Petclinic development team](docs/04-setup-team.md). 
    Creates dependencies for the development team in Okta, Concourse, TMC, and both 
    the workload and shared services clusters.
+4. [Deploy Sonarqube](docs/05-deploy-sonarqube.md) to the shared service cluster. 
+   Sonarqube is used in the pipeline to run as static code scan before building an 
+   image from the application.
+5. [Push the policy bundle](docs/06-push-policy-bundle.md) to to registry. The bundle
+   contains a set of simple resiliency policies that the pipeline will use to
+   validate Kubernetes artifacts.
