@@ -49,3 +49,7 @@ kubectl get namespaces
 kubectl get namespaces
 tmc get workspaces
 ```
+
+## Next Step
+
+[Deploy Sonarqube](docs/05-deploy-sonarqube.md) 
