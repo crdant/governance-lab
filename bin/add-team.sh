@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TEAM=${1} 
+TEAM=${1}
 PLATFORM_WORKSPACE=${2} 
 WORKLOAD_WORKSPACE=${3}
 
@@ -50,7 +50,7 @@ function check_namespace() {
     local workspace="${2}"
     local name="${3}"
     tmc cluster namespace get "${name}" --cluster-name ${cluster} \
-        --management-cluster-name attached  --provisioner-name attached 
+        --management-cluster-name attached  --provisioner-name attached  2> /dev/null
 }
 
 function add_namespace() {
@@ -92,10 +92,16 @@ if ! check_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${SECRETS_
     add_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${SECRETS_NAMESPACE} "${TEAM} concourse secret store"
 fi
 
+
+SHAREDSVC_CLUSTER_NAME=$(yq r ${PARAMS_YAML} clusters.shared-services-cluster)
+PREVIOUS_CONTEXT=$(kubectl config current-context)
+# Install secrets in Shared Services Cluster
+kubectl config use-context $SHAREDSVC_CLUSTER_NAME-admin@$SHAREDSVC_CLUSTER_NAME
+
 TBS_NAMESPACE=tbs-project-${TEAM}
-HARBOR_DOMAIN=$(yq r $PARAMS_YAML common.harborDomain)
-REGISTRY_USER=$(yq r $PARAMS_YAML common.harborUser)
-REGISTRY_PASSWORD=$(yq r $PARAMS_YAML common.harborPassword)
+HARBOR_DOMAIN=$(yq r $PARAMS_YAML tbs.harborRepository)
+REGISTRY_USER=$(yq r $PARAMS_YAML tbs.harborUser)
+export REGISTRY_PASSWORD=$(yq r $PARAMS_YAML common.harborPassword)
 if ! check_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAMESPACE} ; then
     add_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAMESPACE} "${TEAM} TBS build namespace"
     kp secret create harbor-creds \
@@ -103,12 +109,6 @@ if ! check_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAME
       --registry-user $REGISTRY_USER \
       --namespace $TBS_NAMESPACE
 fi
-
-
-SHAREDSVC_CLUSTER_NAME=$(yq r ${PARAMS_YAML} clusters.shared-services-cluster)
-PREVIOUS_CONTEXT=$(kubectl config current-context)
-# Install secrets in Shared Services Cluster
-kubectl config use-context $SHAREDSVC_CLUSTER_NAME-admin@$SHAREDSVC_CLUSTER_NAME
 
 ytt -f concourse/team -f ${PARAMS_YAML} -v common.team=${TEAM} --ignore-unknown-comments | 
     kapp deploy -n tanzu-kapp -a concourse-team-${TEAM} -f - -y
