@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 TEAM=${1} # (yq r ${PARAMS_YAML} common.team)
-OKTA_API_KEY=$(yq r ${PARAMS_YAML} okta.api-key)
+PLATFORM_WORKSPACE=${2} # $(yq r ${PARAMS_YAML} tmc.platform-workspace)
+WORKLOAD_WORKSPACE=${3} # $(yq r ${PARAMS_YAML} musicstore.tmc-workspace)
+
+OKTA_API_KEY=$(yq r ${PARAMS_YAML} okta.api-keya)
 OKTA_AUTH_SERVER_CN=$(yq r ${PARAMS_YAML} okta.auth-server-fqdn)
 
 SHARED_SERVICES_CLUSTER=$(yq r ${PARAMS_YAML} tmc.shared-services-cluster)
-PLATFORM_WORKSPACE=$(yq r ${PARAMS_YAML} tmc.platform-workspace)
-
 WORKLOAD_CLUSTER=$(yq r ${PARAMS_YAML} tmc.workload-cluster)
-WORKLOAD_WORKSPACE=$(yq r ${PARAMS_YAML} tmc.workload-workspace)
 
 function check_okta_group() {
     local name="${1}"
