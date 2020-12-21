@@ -23,3 +23,7 @@ All policies in the directoy `conftest/policy` will be pushed, so
 you can add your own if there's something you'd like to highlight in
 your demonstration
 
+## Next Step
+
+[Setup Concourse secrets and pipeline](docs/07-set-pipeline.md) 
+

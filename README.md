@@ -36,3 +36,6 @@ their repositories before we get started.
 5. [Push the policy bundle](docs/06-push-policy-bundle.md) to to registry. The bundle
    contains a set of simple resiliency policies that the pipeline will use to
    validate Kubernetes artifacts.
+6. [Setup Concourse secrets and pipeline](docs/07-set-pipeline.md). The script 
+   both sets the secrets in Kubernetes and set the pipeline in Concourse so they'll
+   each be up-to-date and in sync.
