@@ -31,7 +31,7 @@ spec:
           subPath: sysctl.sh
       containers:
       - name: sonarqube
-        image: #@ "{}/tools/sonarqube:8".format(data.values.commonSecrets.harborDomain)
+        image: #@ "{}/tools/sonarqube:8".format(data.values.common.harborDomain)
         resources:
           requests:
             memory: "1200Mi"

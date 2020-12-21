@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-TEAM=${1} # (yq r ${PARAMS_YAML} common.team)
-PLATFORM_WORKSPACE=${2} # $(yq r ${PARAMS_YAML} tmc.platform-workspace)
-WORKLOAD_WORKSPACE=${3} # $(yq r ${PARAMS_YAML} musicstore.tmc-workspace)
+TEAM=${1} 
+PLATFORM_WORKSPACE=${2} 
+WORKLOAD_WORKSPACE=${3}
 
 OKTA_API_KEY=$(yq r ${PARAMS_YAML} okta.api-keya)
 OKTA_AUTH_SERVER_CN=$(yq r ${PARAMS_YAML} okta.auth-server-fqdn)
@@ -93,9 +93,9 @@ if ! check_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${SECRETS_
 fi
 
 TBS_NAMESPACE=tbs-project-${TEAM}
-HARBOR_DOMAIN=$(yq r $PARAMS_YAML commonSecrets.harborDomain)
-REGISTRY_USER=$(yq r $PARAMS_YAML commonSecrets.harborUser)
-REGISTRY_PASSWORD=$(yq r $PARAMS_YAML commonSecrets.harborPassword)
+HARBOR_DOMAIN=$(yq r $PARAMS_YAML common.harborDomain)
+REGISTRY_USER=$(yq r $PARAMS_YAML common.harborUser)
+REGISTRY_PASSWORD=$(yq r $PARAMS_YAML common.harborPassword)
 if ! check_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAMESPACE} ; then
     add_namespace ${SHARED_SERVICES_CLUSTER} ${PLATFORM_WORKSPACE} ${TBS_NAMESPACE} "${TEAM} TBS build namespace"
     kp secret create harbor-creds \
