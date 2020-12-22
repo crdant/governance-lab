@@ -34,6 +34,7 @@ function add_policy_template() {
     if ! tmc policy templates get ${policy_name} 2>/dev/null 1>/dev/null ; then 
         tmc policy templates create --object-file ${policy_file}
     fi
+    echo "added policy template: ${policy_name}"
     rm ${policy_file}
 }
 
