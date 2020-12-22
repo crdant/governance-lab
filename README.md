@@ -56,6 +56,21 @@ Lastly, the code is deployed to [TKG](https://tanzu.vmware.com/kubernetes-grid).
 The pipeline ends there, but other controls are at play both as part
 of the deployment and as part of the ongoing management of the workload.
 
+### Workload Assurance
+
+Using [Tanzu Build Service](https://tanzu.vmware.com/build-service) we 
+assure that our in-house workloads are containerized with a set of 
+trusted dependencies. Our workload and the services supporting our 
+pipeling depend on open source databases to store their data. We use
+images and Helm charts from [Tanzu Application Catalog](https://tanzu.vmware.com/application-catalog)
+to assure we can trust these dependencies.
+
+![Building workload trust](docs/workload-trust.png)
+
+Part of setting up the lab is replicating trusted images from
+[TAC](https://tanzu.vmware.com/application-catalog) into our private
+registry to comply with our policies.
+
 ### Workload Control Points
 
 To assure that our running workloads are compliant and secure, we use
