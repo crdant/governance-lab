@@ -25,6 +25,15 @@ templates and policy assignments needed for the demonstration.
 prepare-tmc-policy.sh
 ```
 
+If you read the script and/or the templates it uses, you'll see that
+the custom policy templates use a "magic string" and `sed` while the
+others use `ytt` for YAML-aware templating. This is intentional. I
+started out using `ytt` for everything but the policy templates would
+then load into TMC with the Rego string compressed and escaped. Since
+you'll want to show the templates as part of your demo I wanted to
+keep the Rego readable as a multi-line string and used a more naive
+approach.
+
 ## Next Step 
 
 [Deploy Sonarqube](06-deploy-sonarqube.md) 
