@@ -1,6 +1,0 @@
-roleBindings:
-- role: namespace.edit
-  subjects:
-  - kind: GROUP
-    name: musicstore-devs
-
