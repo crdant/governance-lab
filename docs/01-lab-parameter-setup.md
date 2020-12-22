@@ -20,5 +20,5 @@ for a quick set of instructions on getting those set up.
 
 ## Next Step
 
-[Prepare registry objects](docs/02-prepare-registry.md).
+[Prepare registry objects](02-prepare-registry.md).
 
