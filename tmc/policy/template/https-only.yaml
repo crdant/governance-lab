@@ -1,0 +1,58 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: ENVIRONMENThttpsonly
+spec:
+  crd:
+    spec:
+      names:
+        kind: ENVIRONMENThttpsonly
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package ENVIRONMENThttpsonly
+
+        violation[{"msg": msg }] {
+            is_ingress(input)
+
+            ingress := input.review.object
+            name = ingress.metadata.name
+            not https_complete(ingress)
+            msg := sprintf("Ingress should be https. tls configuration required for %v", [name])
+        }
+
+        is_ingress(object) = true {
+            input.review.kind.kind == "Ingress"
+            re_match("^(extensions|networking.k8s.io)", input.review.kind.apiVersion)
+        }
+
+        https_complete(ingress) = true {
+            ingress.spec["tls"]
+            count(ingress.spec.tls) > 0
+        }
+
+        violation[{"msg": msg }] {
+            is_ingress(input)
+
+            ingress := input
+            name = ingress.metadata.name
+            not https_complete(ingress)
+            count(ingress.metadata.annotations) > 0
+            allow_http(ingress)
+            not force_redirect(ingress)
+            not certmanager_solver(ingress)
+            msg := sprintf("Ingress should be https. Annotation force-ssl-redirect=true or allow-https=false required for %v", [name])
+        }
+
+        allow_http(ingress) = true {
+            ingress.metadata.annotations["kubernetes.io/ingress.allow-http"] == "true"
+        }
+
+        force_redirect(ingress) = true {
+            ingress.metadata.annotations["ingress.kubernetes.io/force-ssl-redirect"] 
+            ingress.metadata.annotations["ingress.kubernetes.io/force-ssl-redirect"] == "true"
+        }
+
+        certmanager_solver(ingress) = true {
+            ingress.metadata.labels["acme.cert-manager.io/http01-solver"] == "true"
+        }
