@@ -30,7 +30,7 @@ their repositories before we get started.
 4. [Setup the environment for the Petclinic development team](docs/04-setup-team.md). 
    Creates dependencies for the development team in Okta, Concourse, TMC, and both 
    the workload and shared services clusters.
-5. [Prepare TMC policy](05-prepare-tmc-policy.md) to allow access to the cluster, 
+5. [Prepare TMC policy](docs/05-prepare-tmc-policy.md) to allow access to the cluster, 
    enforce deployment minimums, and one allow workloads from the private registry.
 6. [Deploy Sonarqube](docs/06-deploy-sonarqube.md) to the shared service cluster. 
    Sonarqube is used in the pipeline to run as static code scan before building an 
