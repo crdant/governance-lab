@@ -32,8 +32,8 @@ name from your parameters file:
   It is managed by TMC and in `$PLATFORM_WORKSPACE`, and the service account that
   runs Concourse has access to secrets within it.
 * A namespace `tbs-project-${TEAM}` in the shared cluster for TBS builds and
-  build artifacts. Like the Concourse secrets namespace it's in `$PLATFORM_WORKSPACE`
-  and managed by TMC.
+  build artifacts. This one is technically part of the platform, but we put it
+  in the `${ENVIRONMENT}-${TEAM}` workspace for access control purposes.
 
 ## Validate Setup
 
