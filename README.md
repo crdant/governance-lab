@@ -10,34 +10,89 @@ an [end-to-end demonstration of the developer and operator experience]
 The Lab uses the [Spring Pet Clinic](https://github.com/spring-projects/spring-petclinic)
 application as the codebase for the demonstration. 
 
-# Standing Up the Lab
+## Why Use This Lab
 
-Since we build on the work of others, we have to run some steps from 
-their repositories before we get started.
+This lab is designed to explore and demonstrate the governance points in
+the Tanzu portfolio. It incorporates some additional capabilities, like
+static and dynamic application scanning, to highlight the full context in 
+which the Tanzu capabilities operate and establish a real-life layering of 
+controls.
 
-0. [Setup the Foundational Lab and Bonus Labs](https://github.com/doddatpivotal/tkg-lab-e2e-adaptation/blob/main/docs/00-tkg-lab-foundation.md), 
-   follow the steps as document in [@doddatpivotal's repository](https://github.com/doddatpivotal/tkg-lab-e2e-adaptation) and its
-   references to the [original lab](https://github.com/Tanzu-Solutions-Engineering/tkg-lab).
-1. [Configure parameters for this lab](docs/01-lab-parameter-setup.md) another step
-   where I lean heavily on [@doddatpivotal](https://github.com/doddatpivotal) since 
-   my parameter file is adapted from his.
-2. [Prepare your Harbor registry](docs/02-prepare-registry.md) with the required 
-   Okta users, projects, and replications.
-3. [Install TBS and it's dependencies](docs/03-install-tbs.md) onto the shared 
-   services cluster. This step also creates a stack and builder using older 
-   dependencies so we can demonstrate how new TBS dependencies can resolve CVEs without 
-   developers rebuilding.
-4. [Setup the environment for the Petclinic development team](docs/04-setup-team.md). 
-   Creates dependencies for the development team in Okta, Concourse, TMC, and both 
-   the workload and shared services clusters.
-5. [Prepare TMC policy](docs/05-prepare-tmc-policy.md) to allow access to the cluster, 
-   enforce deployment minimums, and one allow workloads from the private registry.
-6. [Deploy Sonarqube](docs/06-deploy-sonarqube.md) to the shared service cluster. 
-   Sonarqube is used in the pipeline to run as static code scan before building an 
-   image from the application.
-7. [Push the policy bundle](docs/07-push-policy-bundle.md) to to registry. The bundle
-   contains a set of simple resiliency policies that the pipeline will use to
-   validate Kubernetes artifacts.
-8. [Setup Concourse secrets and pipeline](docs/08-set-pipeline.md). The script 
-   both sets the secrets in Kubernetes and set the pipeline in Concourse so they'll
-   each be up-to-date and in sync.
+The high-level architecture of the Tanzu portfolio and its capabilities is
+shown in the Tanzu Overview Whiteboard
+
+![Tanzu Overvierw Whiteboard](docs/whiteboard.png)
+
+many Tanzu components provide automated governance controls that increase
+security, consistency, and resiliency to the process you use to build, run,
+and manage software workloads.
+
+### Controls in the CI/CD Pipeline
+
+VMware's open source [Concourse](https://concourse-ci.org) orchestrates the
+CI/CD pipeline that builds, validates, and deploys the application. The 
+pipeline uses [Tanzu Build Service](https://tanzu.vmware.com/build-service)
+and it's [cloud-native buildpacks](https://buildpacks.io) to assure the 
+container is build with a trusted version of the JDK and the underlying
+operating system.
+
+![CI/CD pipeline with Tanzu Build Service](docs/pipeline.png)
+
+The pipeline uses additional open source tools to assure that both the 
+application and the Kubernetes objects that deploy it are secure. 
+[Sonarqube](https://sonarqube.com) scans the Java code before it passing 
+the JAR file to [TBS](https://tanzu.vmware.com/build-service) to 
+containerize. Before deploying the container, [Conftest](https://conftest.dev)
+checks the Kubernetes manifests to assure they are compliant with the
+workload [polices](conftest/policy) we'll later enforce at runtime.
+
+After building the images and confirming tha the Kubernetes manifests
+pass muster, the pipeline does a staging deployment and runs the open 
+source [OWASP ZAP](https://owasp.org/www-project-zap/) to do a quick scan 
+of the running application. This is not a deep penetration test but gives
+a quick analysis of whether the application is safe as deployed.
+
+Lastly, the code is deployed to [TKG](https://tanzu.vmware.com/kubernetes-grid).
+The pipeline ends there, but other controls are at play both as part
+of the deployment and as part of the ongoing management of the workload.
+
+### Workload Assurance
+
+Using [Tanzu Build Service](https://tanzu.vmware.com/build-service) we 
+assure that our in-house workloads are containerized with a set of 
+trusted dependencies. Our workload and the services supporting our 
+pipeling depend on open source databases to store their data. We use
+images and Helm charts from [Tanzu Application Catalog](https://tanzu.vmware.com/application-catalog)
+to assure we can trust these dependencies.
+
+![Building workload trust](docs/workload-trust.png)
+
+Part of setting up the lab is replicating trusted images from
+[TAC](https://tanzu.vmware.com/application-catalog) into our private
+registry to comply with our policies.
+
+### Workload Control Points
+
+To assure that our running workloads are compliant and secure, we use
+the open source [Harbor registry](https://goharbor.io) (sponsored
+primarily by VMware) together with [Tanzu Mission Control](https://tanzu.vmware.com/mission-control).
+
+![Harbor and TMC control points](docs/workload-controls.png)
+
+[Harbor](https://goharbor.io) scans our workloads to help us to 
+understand the CVEs that are present in each container workload. It
+also prevents workloads with CVEs above a certain level from 
+executing. Workloads are cleared by [Harbor](https://goharbor.io)
+are subject to additional policy enforced by [TMC](https://tanzu.vmware.com/mission-control).
+
+[TMC](https://tanzu.vmware.com/mission-control) ensures that our
+workload namespaces only allow workloads pulled from the [Harbor 
+registry](https://goharbor.io) to run. It also validates the 
+deployment and ingress objects against [policies](tmc/policy/template)
+that assure that a minimum number of replicas run and that HTTPS
+is used to access the code.
+
+## Standing Up the Lab
+
+See the [step by step instructions](docs/instructions.md) on how to configure
+the lab.
