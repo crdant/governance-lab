@@ -51,4 +51,4 @@ tmc get workspaces
 
 ## Next Step
 
-[Deploy Sonarqube](docs/05-deploy-sonarqube.md) 
+[Prepare TMC polices](05-prepare-tmc-policy.md)
