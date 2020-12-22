@@ -44,5 +44,5 @@ setup-harbor.sh
 
 ## Next Step
 
-[Install TBS and it's dependencies](docs/02-install-tbs.md).
+[Install TBS and it's dependencies](02-install-tbs.md).
 

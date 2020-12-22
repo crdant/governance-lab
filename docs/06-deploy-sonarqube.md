@@ -27,5 +27,5 @@ open https://$(yq r ${PARAMS_YAML} sonarqube.host)
 
 ## Next Step
 
-[Push the policy bundle to the registry](docs/07-push-policy-bundle.md) 
+[Push the policy bundle to the registry](07-push-policy-bundle.md) 
 

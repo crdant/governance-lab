@@ -25,5 +25,5 @@ your demonstration
 
 ## Next Step
 
-[Setup Concourse secrets and pipeline](docs/08-set-pipeline.md) 
+[Setup Concourse secrets and pipeline](08-set-pipeline.md) 
 
