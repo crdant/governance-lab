@@ -21,7 +21,8 @@ push-policies.sh
 
 All policies in the directoy `conftest/policy` will be pushed, so
 you can add your own if there's something you'd like to highlight in
-your demonstration
+your demonstration. The policies I've created are the same ones 
+enforced at runtime using TMC's custom policy capabilities.
 
 ## Next Step
 
