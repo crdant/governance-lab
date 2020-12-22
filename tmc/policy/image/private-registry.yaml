@@ -1,0 +1,13 @@
+#@ load("@ytt:data", "data")
+---
+fullName:
+  name: private-registry
+  workspaceName: #@ "{}-{}".format(data.values.environment, data.values.common.team)
+spec:
+  input:
+    registry_repos:
+    - #@ data.values.common.harborDomain
+  recipe: allow-registry
+  recipeVersion: v1
+  type: image-policy
+

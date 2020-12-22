@@ -23,19 +23,21 @@ their repositories before we get started.
    my parameter file is adapted from his.
 2. [Prepare your Harbor registry](docs/02-prepare-registry.md) with the required 
    Okta users, projects, and replications.
-2. [Install TBS and it's dependencies](docs/03-install-tbs.md) onto the shared 
+3. [Install TBS and it's dependencies](docs/03-install-tbs.md) onto the shared 
    services cluster. This step also creates a stack and builder using older 
    dependencies so we can demonstrate how new TBS dependencies can resolve CVEs without 
    developers rebuilding.
-3. [Setup the environment for the Petclinic development team](docs/04-setup-team.md). 
+4. [Setup the environment for the Petclinic development team](docs/04-setup-team.md). 
    Creates dependencies for the development team in Okta, Concourse, TMC, and both 
    the workload and shared services clusters.
-4. [Deploy Sonarqube](docs/05-deploy-sonarqube.md) to the shared service cluster. 
+5. [Prepare TMC policy](docs/05-prepare-tmc-policy.md) to allow access to the cluster, 
+   enforce deployment minimums, and one allow workloads from the private registry.
+6. [Deploy Sonarqube](docs/06-deploy-sonarqube.md) to the shared service cluster. 
    Sonarqube is used in the pipeline to run as static code scan before building an 
    image from the application.
-5. [Push the policy bundle](docs/06-push-policy-bundle.md) to to registry. The bundle
+7. [Push the policy bundle](docs/07-push-policy-bundle.md) to to registry. The bundle
    contains a set of simple resiliency policies that the pipeline will use to
    validate Kubernetes artifacts.
-6. [Setup Concourse secrets and pipeline](docs/07-set-pipeline.md). The script 
+8. [Setup Concourse secrets and pipeline](docs/08-set-pipeline.md). The script 
    both sets the secrets in Kubernetes and set the pipeline in Concourse so they'll
    each be up-to-date and in sync.

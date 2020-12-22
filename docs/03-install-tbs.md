@@ -32,4 +32,4 @@ kp clusterbuilder list
 
 ## Next Step
 
-[Setup the environment for the Petclinic development team](docs/04-setup-team.md) 
+[Setup the environment for the Petclinic development team](04-setup-team.md) 

@@ -1,0 +1,8 @@
+#@ load("@ytt:data", "data")
+---
+roleBindings:
+- role: namespace.edit
+  subjects:
+  - kind: GROUP
+    name: #@ "{}-devs".format(data.values.common.team)
+

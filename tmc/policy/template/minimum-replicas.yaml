@@ -1,0 +1,32 @@
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: ENVIRONMENTdeploymentreplicaminimum
+spec:
+  crd:
+    spec:
+      names:
+        kind: ENVIRONMENTdeploymentreplicaminimum
+      validation:
+        openAPIV3Schema:
+          properties:
+            replicas:
+              type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package ENVIRONMENTdeploymentreplicaminimum
+
+        is_deployment {
+          input.review.kind.kind == "Deployment"
+        }
+
+        deployment = input.review.object
+        name = deployment.metadata.name
+        replicas = input.parameters.replicas
+
+        violation[{"msg": msg }] {
+          is_deployment
+          deployment.spec.replicas < replicas
+          msg := sprintf("To meet resiliency standards, %s must run at least %s instance", [name, replicas])
+        }

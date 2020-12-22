@@ -6,6 +6,7 @@ can easily use to search/replace and fill some things in quickly:
 
 | Tag                              | Usage                                                                 |
 |----------------------------------|-----------------------------------------------------------------------|
+|`ENVIRONMENT`                     | a name for your environmnet to distinguish it in TMC                  |
 |`YOUR_WORKLOAD_SUBDOMAIN`         | subdomain your workload cluster users for it's wildcard DNS           |
 |`YOUR_SHARED_SERVICES_SUBDOMAIN`  | subdomain your shared services cluster users for it's wildcard DNS    |
 |`YOUR_GITHUB_USERNAME`            | username you'll use on Github for the source and package repositories |
@@ -20,5 +21,5 @@ for a quick set of instructions on getting those set up.
 
 ## Next Step
 
-[Prepare registry objects](docs/02-prepare-registry.md).
+[Prepare registry objects](02-prepare-registry.md).
 
