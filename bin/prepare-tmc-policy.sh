@@ -3,6 +3,7 @@ set -e
 
 environment=$(yq r ${PARAMS_YAML} environment)
 team=$(yq r ${PARAMS_YAML} common.team)
+cluster_group=$(yq r ${PARAMS_YAML} tmc.workload-cluster-group)
 
 function set_iam_policy() {
     workspace=${1}
@@ -24,7 +25,7 @@ function set_image_policy() {
     rm ${policy_file}
 }
 
-function set_custom_policy() {
+function add_policy_template() {
     template=${1}
     policy_file=$(gmktemp --suffix .yaml)
     # deliberately doing something YAML UNaware to maintain multiline string format
@@ -42,6 +43,6 @@ set_image_policy ${workspace}
 
 template_dir="tmc/policy/template"
 for template in $(ls "${template_dir}"); do
-    set_custom_policy "${template_dir}/${template}"
+    add_policy_template "${template_dir}/${template}"
 done
 
