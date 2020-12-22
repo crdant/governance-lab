@@ -34,6 +34,32 @@ you'll want to show the templates as part of your demo I wanted to
 keep the Rego readable as a multi-line string and used a more naive
 approach.
 
+## Assign the Policies Manually
+
+Unfortunately, the TMC CLI won't allow us to assign the custom policies
+to the appropriate cluster group. Instead, you'll have to do it using 
+the TMC GUI. Log into TMC, and navigate to "Policies > Assignments" 
+then select the "Custom" tab.  Find your workload cluster group under
+clusters and click on it.
+
+You're going to add each of the policies that we loaded templates for
+in the previous step. All of their names were output at the end. For each
+one, you'll want to click on the "Create Custom Policy Link" and select 
+the policy template name from the dropdown. You'll need to select the kind
+and API group it applies to according to this table, and fill in any of
+the required parameters. Each name is prefaced with your environment.
+
+| Policy                   | Kind       | API Group         | Parameters   | 
+|--------------------------|------------|-------------------|--------------|
+| deploymentreplicaminimum | Deployment | apps              | Replicas: 3  |
+| httpsonly                | Ingress    | netorking.k8s.io  |              |
+|                          | Ingress    | extensions        |              |
+
+We're also going to coax TMC into enforcing these at the workspace level 
+by using a label selector on the label "tmc.cloud.vmware.com/workspace". 
+Add that selector and set the value to your workload workspace 
+`${ENVIRONMENT}-${TEAM}`.
+
 ## Next Step 
 
 [Deploy Sonarqube](06-deploy-sonarqube.md) 
