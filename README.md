@@ -10,7 +10,20 @@ an [end-to-end demonstration of the developer and operator experience]
 The Lab uses the [Spring Pet Clinic](https://github.com/spring-projects/spring-petclinic)
 application as the codebase for the demonstration. 
 
-# Standing Up the Lab
+## Why Use This Lab
+
+This lab is designed to explore and demonstrate the governance points in
+the Tanzu portfolio. It incorporates some additional capabilities, like
+static and dynamic application scanning, to highlight the full context in 
+which the Tanzu capabilities operate and establish the interaction among
+controls.
+
+The high-level architecture of the Tanzu portfolio and its capabilities is
+shown in the Tanzu Overview Whiteboard:
+
+![Tanzu Overvierw Whiteboard](docs/whiteboard.png)
+
+## Standing Up the Lab
 
 Since we build on the work of others, we have to run some steps from 
 their repositories before we get started.
