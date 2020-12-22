@@ -2,13 +2,13 @@
 
 TEAM=${1}
 PLATFORM_WORKSPACE=${2} 
-WORKLOAD_WORKSPACE=${3}
 
 OKTA_API_KEY=$(yq r ${PARAMS_YAML} okta.api-keya)
 OKTA_AUTH_SERVER_CN=$(yq r ${PARAMS_YAML} okta.auth-server-fqdn)
 
 SHARED_SERVICES_CLUSTER=$(yq r ${PARAMS_YAML} tmc.shared-services-cluster)
 WORKLOAD_CLUSTER=$(yq r ${PARAMS_YAML} tmc.workload-cluster)
+WORKLOAD_WORKSPACE="$(yq r ${PARAMS_YAML} tmc.workload-cluster)-${TEAM}"
 
 function check_okta_group() {
     local name="${1}"
